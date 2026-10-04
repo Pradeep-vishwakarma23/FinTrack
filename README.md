@@ -1,697 +1,641 @@
 # FinTrack — AI-Powered Automatic Personal Finance Intelligence System
 
-A full-stack MERN (MongoDB, Express.js, React, Node.js) web application designed for automatic financial transaction ingestion (Bank Statements CSV/Excel, SMS transaction alerts), AI-driven transaction categorization, multi-factor confidence scoring, duplicate prevention, category-level budgeting, AI financial insights, predictive spending analytics, and downloadable monthly PDF reports.
+**FinTrack** is an intelligent, full-stack, cross-platform personal finance management and intelligence system. It automates financial tracking by ingesting transactions from bank statements (CSV/XLSX), financial SMS messages, and real-time Android push notifications, classifies and categorizes expenses using deterministic heuristic rules and Google Gemini AI, enforces multi-layer duplicate prevention, and delivers verified, deterministic analytics, goals, action plans, monthly PDF statements, Model Context Protocol (MCP) server tooling, and a conversational AI Copilot.
 
 ---
 
-## Ingestion & Intelligence Pipelines
-- **Phase 1 Complete**: Automated Bank Statement Ingestion (`.csv`, `.xlsx`, `.xls`) with dynamic column aliasing, Indian date format normalization, merchant extraction, duplicate fingerprinting, and interactive staged review pipeline.
-- **Phase 2 Complete**: Automated Message / SMS Transaction Ingestion with sensitive data redaction (OTPs, PINs, full account numbers), entity & amount extraction, debit/credit classification, and 30+ synthetic demo dataset.
+## 1. Project Overview
+
+FinTrack is engineered as an end-to-end financial intelligence solution consisting of:
+- **Express.js / Node.js Backend**: RESTful API server, native JSON-RPC 2.0 Model Context Protocol (MCP) server, deterministic financial calculation engine, LLM query routing and optimization layer, and PDFKit report streaming engine.
+- **React (Vite) Web Application**: Modern responsive web dashboard with Redux Toolkit state management, Recharts analytics, drag-and-drop file/SMS import staging workflows, financial goals, and embedded AI Copilot drawer.
+- **React Native (Expo) Android Mobile Application**: Dedicated mobile experience with hardware-backed SecureStore authentication, biometric-grade security practices, real-time push notification interception, categorized financial ledger, intelligence dashboards, and docked floating AI Copilot.
+- **MongoDB Database**: Schema-enforced document store for users, transactions, budgets, financial goals, actionable financial steps, and multi-turn Copilot sessions with strict per-user data isolation.
 
 ---
 
-## Architectural Blueprint
+## 2. Problem Statement
+
+Traditional personal finance applications suffer from critical operational and architectural flaws:
+1. **High Manual Burden**: Users are required to enter every transaction manually, leading to abandonment within weeks.
+2. **Privacy Risks & Fragmented Data**: Bank aggregators often demand raw banking credentials or store unredacted Personal Identifiable Information (PII), OTPs, and full account numbers on third-party servers.
+3. **LLM Hallucinations & Financial Inaccuracy**: Standard conversational AI chatbots hallucinate financial math, fabricate balances, and produce contradictory numbers because they attempt arithmetic calculations inside LLM token generation.
+4. **Duplicate Spikes**: Multi-channel notifications, SMS alerts, and subsequent bank statement uploads often double- or triple-count identical expenses.
+5. **Passive Tracking without Actionable Guidance**: Typical budget apps display historical charts without evaluating budget velocity, goal feasibility, recurring commitments, or concrete step-by-step remediation plans.
+
+---
+
+## 3. Project Objectives
+
+1. **Automated Zero-Friction Ingestion**: Ingest bank statements (`.csv`, `.xlsx`, `.xls`), SMS financial texts, and native Android push notifications automatically.
+2. **Strict Grounded Truth & Deterministic Mathematics**: Ensure all sums, averages, burn rates, savings metrics, and feasibility scores are calculated deterministically by tested JavaScript engines—never by LLM text completion.
+3. **Privacy by Design**: Automatically detect and strip OTPs, PINs, bank account numbers, debit/credit card digits, and non-financial messages locally before persistent storage.
+4. **Staged Confirmation Pipeline**: Route newly intercepted transactions through a dedicated review inbox (`staged`) before committing them to the verified financial ledger (`confirmed`).
+5. **Conversational Financial Copilot with Native MCP Tools**: Provide a context-aware assistant powered by Google Gemini and read-only MCP financial tools with zero hallucinated calculations.
+6. **Cost-Optimized LLM Execution**: Implement deterministic routing, intelligent caching, in-flight deduplication, and heuristic fallback guarantees to minimize API overhead and prevent service interruption.
+
+---
+
+## 4. Key Innovation
+
+FinTrack introduces an **Air-Gapped Hybrid Intelligence Architecture**:
+- **Deterministic Core Layer**: Financial mathematics (totals, velocity, run-rate forecast, mom growth, category limits, goal feasibility) are computed 100% deterministically from verified ledger facts.
+- **Model Context Protocol (MCP) Boundary**: The AI Copilot and Gemini models access user financial facts exclusively through structured, read-only JSON-RPC 2.0 tools with strict user JWT scoping. The LLM is never permitted to execute database writes, delete records, or guess financial figures.
+- **Dual-Tier Dual-Engine Intelligence**: If Google Gemini is unavailable, rate-limited, or network-disconnected, FinTrack automatically switches to the built-in deterministic heuristic engine, ensuring zero downtime and 100% uptime for financial advice.
+
+---
+
+## 5. Core Features
+
+- **Multi-Source Ingestion**:
+  - Bank Statements (CSV, Excel `.xlsx`, `.xls`) with dynamic header aliasing.
+  - Financial SMS bulk text parsing with regex pattern extraction.
+  - Android `NotificationListenerService` capturing real-time banking notifications.
+- **Smart Security & Filtering**:
+  - Instant OTP/Security alert rejection.
+  - PII masking for account and card numbers.
+  - Multi-tier SHA-256 fingerprint deduplication.
+- **Staged Transaction Inbox**:
+  - Interactive Confirm, Edit, or Ignore/Delete workflow before transactions enter ledger analytics.
+- **Comprehensive Ledger & Category Budgeting**:
+  - Virtualized transactions ledger with search, category filtering, source badges, and custom pagination.
+  - Monthly overall budget and category-specific spending caps with color-coded threshold alerts.
+- **Banking Intelligence & Predictive Analytics**:
+  - Net Savings Rate, Daily Burn Rate, and Month-End Run-Rate Forecast.
+  - Spending Anomalies detection (outliers, budget shocks, spikes).
+  - Top Merchants ranking and Category Utilization tracking.
+  - Recurring Subscriptions & Fixed Obligations detector with price-hike alerts.
+  - Multi-month trend trajectory (6-month / 12-month MoM comparisons).
+- **Financial Goals & Action Plans**:
+  - Target tracking with deterministic feasibility scoring (`On Track`, `Challenging`, `Low Feasibility`, `At Risk`).
+  - AI-generated, verified Action Plans with measurable monthly and 6-month financial impacts.
+- **Conversational FinTrack Copilot**:
+  - Multi-turn conversational memory with persistent session context.
+  - What-If simulations (e.g. "What if I cut Food by 20% and add ₹10,000 income?").
+  - Contextual "Explain This" metrics deep-dives.
+  - Proactive intelligence alerts for deficits and budget shocks.
+- **Branded Monthly PDF Statement Generation**:
+  - Vectorized PDF financial statements with income/expense summaries, category breakdown tables, and verified transaction histories.
+
+---
+
+## 6. Complete System Architecture
+
 ```
-+-------------------------------------------------------------------------------+
-|                                 CLIENT (Vite + React)                         |
-|  - Pages: Dashboard, Transactions, Imports & Staging, Budget, Insights,       |
-|           Reports, Profile, Auth                                              |
-|  - State: Redux Toolkit (auth, transactions, budget, insights, imports)       |
-|  - Visualization: Recharts (LineChart, BarChart, PieChart)                    |
-|  - HTTP: Axios Instance with JWT Interceptors & 401 Auto-Purge                |
-+---------------------------------------+---------------------------------------+
-                                        | (HTTP / REST API - Port 5000)
-                                        v
-+-------------------------------------------------------------------------------+
-|                            SERVER (Node.js + Express)                         |
-|  - Security: Helmet, CORS Whitelisting, Express Rate Limiter                  |
-|  - Routes: /api/auth, /api/transactions, /api/imports, /api/budget,          |
-|            /api/ai, /api/dashboard, /api/reports                             |
-|  - Ingestion Services: fileParserService.js, smsParserService.js             |
-|  - Processing Engines: transactionIntelligence.js, financeAnalyzer.js,        |
-|                        aiService.js (OpenAI / Heuristic Fallbacks)            |
-|  - Reporting: PDFKit Binary Stream Generator                                  |
-+---------------------------------------+---------------------------------------+
-                                        | (HTTP / REST API - Port 5000)
-                                        v
-+-------------------------------------------------------------------------------+
-|                            SERVER (Node.js + Express)                         |
-|  - Security: Helmet, CORS Whitelisting, Express Rate Limiter                  |
-|  - Routes: /api/auth, /api/transactions, /api/budget, /api/ai,                |
-|            /api/dashboard, /api/reports                                       |
-|  - Middleware: JWT Auth Verification (protect)                                |
-|  - Processing Engines: financeAnalyzer.js, aiService.js (OpenAI / Heuristics) |
-|  - Reporting: PDFKit Binary Stream Generator                                  |
-+---------------------------------------+---------------------------------------+
-                                        | (Mongoose ODM)
-                                        v
-+-------------------------------------------------------------------------------+
-|                           DATABASE (MongoDB Atlas / Local)                    |
-|  - Collections: users, transactions, budgets                                  |
-+-------------------------------------------------------------------------------+
++---------------------------------------------------------------------------------------+
+|                                    CLIENT LAYER                                       |
+|                                                                                       |
+|   +---------------------------------------+   +-----------------------------------+   |
+|   |         React (Vite) Web Client       |   |      React Native (Expo) Mobile   |   |
+|   |  - Redux Toolkit State Management     |   |  - Android Notification Ingestion |   |
+|   |  - Recharts Visual Analytics          |   |  - Hardware SecureStore Storage   |   |
+|   |  - Responsive Glassmorphism UI        |   |  - Docked Floating Copilot Hub    |   |
+|   |  - File & SMS Staging Dropzones       |   |  - Virtualized Infinite Ledger    |   |
+|   +-------------------+-------------------+   +-----------------+-----------------+   |
++-----------------------|-----------------------------------------|---------------------+
+                        | (HTTPS / REST API / JSON-RPC 2.0)       |
+                        v                                         v
++---------------------------------------------------------------------------------------+
+|                                   BACKEND SERVER LAYER                                |
+|                                                                                       |
+|   +-------------------------------------------------------------------------------+   |
+|   |                    Express.js Gateway & Security Middleware                   |   |
+|   |  - Helmet HTTP Security Headers         - Express Rate Limiter (Brute-Force)  |   |
+|   |  - Strict CORS Whitelisting             - JWT Authentication & Verification   |   |
+|   +---------------------------------------+---------------------------------------+   |
+|                                           |                                           |
+|   +---------------------------------------v---------------------------------------+   |
+|   |                           Ingestion & Parsing Pipeline                        |   |
+|   |  - File Parser Service (CSV / XLSX)   - Financial Notification Filter         |   |
+|   |  - SMS Parser Engine                  - OTP Rejection & PII Sanitizer         |   |
+|   |  - SHA-256 Deduplication Hash Engine  - Staging Repository (ImportBatch)      |   |
+|   +---------------------------------------+---------------------------------------+   |
+|                                           |                                           |
+|   +---------------------------------------v---------------------------------------+   |
+|   |                      Deterministic Financial Core Engine                      |   |
+|   |  - Banking Intelligence Calculator    - Run-Rate & Burn-Rate Forecaster       |   |
+|   |  - Anomaly & Shock Detection Engine   - Subscription & Cadence Analyzer       |   |
+|   |  - Multi-Month Trend Analyzer         - Goal Feasibility Evaluator            |   |
+|   |  - PDFKit Statement Streamer          - Action Plan Generator                 |   |
+|   +-------------------+-----------------------------------+-----------------------+   |
+|                       |                                   |                           |
+|   +-------------------v-------------------+   +-----------v-----------------------+   |
+|   |     Native JSON-RPC 2.0 MCP Server    |   |    LLM Cost & Router Optimizer    |   |
+|   |  - Tool: get_monthly_summary          |   |  - Intent Classifier & Fast-Path  |   |
+|   |  - Tool: get_category_breakdown       |   |  - In-Flight Request Deduplicator |   |
+|   |  - Tool: get_spending_anomalies       |   |  - Multi-Tier Response Cache      |   |
+|   |  - Tool: get_expense_forecast         |   |  - Dual-Engine Fallback Handler   |   |
+|   |  - Tool: get_recurring_subscriptions  |   |  - Privacy-Preserving Telemetry   |   |
+|   |  - Tool: run_what_if_simulation       |   +-------------------+---------------+   |
+|   +-------------------+-------------------+                       |                   |
++-----------------------|-------------------------------------------|-------------------+
+                        |                                           |
+                        v                                           v
++-----------------------------------+               +-----------------------------------+
+|          DATABASE LAYER           |               |             AI LAYER              |
+|                                   |               |                                   |
+|   MongoDB Database / Mongoose     |               |   Google Gemini REST API          |
+|   - users       - transactions    |               |   - Model: gemini-2.0-flash       |
+|   - budgets     - goals           |               |   - Strict JSON structured output |
+|   - actionplans - copilotsessions |               |   - Grounded mathematical facts   |
+|   - importbatches                 |               |   - Fallback Heuristic Generator  |
++-----------------------------------+               +-----------------------------------+
 ```
 
 ---
 
-## 2. Implementation Status Summary
+## 7. Web Application
 
-Based on an exhaustive line-by-line audit of the existing codebase:
-
-- **Fully Implemented**:
-  - Express server initialization and lifecycle (`server.js`, `app.js`).
-  - Core server middleware: `helmet`, `cors` origin configuration, `express-rate-limit` (300 requests / 15 min), JSON body parsing, and global error handling.
-  - Server route hierarchy and router mounting for all modules.
-  - Client tooling: Vite configuration with development API proxy (`/api` -> `http://localhost:5000`), Tailwind CSS configuration with custom theme tokens, and PostCSS setup.
-  - Client Axios network client (`api.js`) with request authentication interceptors and response token eviction interceptors.
-  - Client service modules with full endpoint mappings (`authService.js`, `transactionService.js`, `budgetService.js`, `dashboardService.js`, `reportService.js`, `aiService.js`).
-  - Formatting utility functions (`format.js`) for INR currency, date formatting, predefined transaction categories (12), and payment methods (6).
-  - Standalone dashboard component (`SummaryCard.jsx`).
-
-- **Partially Implemented (Structural Skeletons / Stubs)**:
-  - Mongoose Database Models (`User.js`, `Transaction.js`, `Budget.js`): Schema constructor calls exist, but schema fields, validations, and hooks are commented out.
-  - Client Redux Store (`store.js`): Configured with an empty reducer object `{}` despite importing all slice reducers.
-  - Client Root Router (`App.jsx`): Router and layout shells exist, but route declarations and authentication gate components are commented-out stubs.
-  - Client Layout Components (`Layout.jsx`, `Navbar.jsx`, `Sidebar.jsx`): Container DOM structures exist, but navigation loops, auth bindings, and child outlet rendering are commented out.
-  - Client UI Pages (8 pages): JSX container structures exist, but local state, Redux thunk dispatches, Recharts chart bindings, form handlers, and data tables are commented-out stubs.
-
-- **Planned But Not Implemented (Code Missing / Stubs Only)**:
-  - Backend JWT Authentication Middleware (`authMiddleware.js`): Contains only pseudocode comments; does not decode tokens or call `next()`.
-  - Backend Controllers (All 6 controller files): `authController.js`, `transactionController.js`, `budgetController.js`, `dashboardController.js`, `reportController.js`, and `aiController.js` contain only pseudocode comments.
-  - Financial Analytics Business Engine (`financeAnalyzer.js`): Functions (`currency`, `getMonthRange`, `summarizeTransactions`, `analyzeFinance`) contain only pseudocode comments.
-  - AI Service Engine (`aiService.js`): Functions (`hasOpenAIKey`, `generateAIInsights`, `predictExpense`) contain only pseudocode comments.
-  - Redux Slices (All 4 slice files): Thunks, reducer actions, and extraReducers builder cases are empty functions.
+Built with **React 18, Vite, and Redux Toolkit**, styled using modern CSS tokens and Tailwind CSS:
+- **Financial Dashboard**: Real-time KPI summaries (Income, Expense, Net Savings, Savings Rate), Recharts dynamic spending trajectories, category donut breakdown, and pending detected transaction counter.
+- **Ledger & Transactions Page**: Full CRUD ledger with search debouncing, category pills, date range picker, source badges, and pagination.
+- **Imports & Staging**: Dedicated dropzone supporting CSV and Excel spreadsheets, pasteable SMS bulk interface, and interactive transaction review table.
+- **Budgeting & Category Caps**: Monthly budget ceiling manager with progress indicators and automatic overspend warnings.
+- **Intelligence & Analytics**: Full intelligence suite displaying Expense Run-Rate Forecast, Budget Velocity, Spending Anomalies, Top Merchants, and Recurring Subscriptions.
+- **Financial Goals & Action Plans**: Visual savings goals with deterministic feasibility metrics, What-If simulation modals, and verified AI Action Plans.
+- **Financial Statement Reports**: Interactive period selector with instant in-browser PDF generation and streaming download.
+- **FinTrack Copilot Chat Drawer**: Slide-over AI assistant interface with follow-up suggestion chips, What-If calculator, and explain metric cards.
 
 ---
 
-## 3. Complete Technology Stack
+## 8. Android Mobile Application
 
-### Backend Technologies
-| Package | Version | Purpose |
-| :--- | :--- | :--- |
-| **Node.js** | ES Modules (`"type": "module"`) | Runtime environment |
-| **Express.js** | `^4.18.2` | RESTful API server framework |
-| **Mongoose** | `^7.5.0` | Object Data Modeling (ODM) for MongoDB |
-| **JSONWebToken** | `^9.0.2` | Token generation and signature verification |
-| **Bcrypt** | `^5.1.1` | Cryptographic password hashing |
-| **OpenAI SDK** | `^4.12.4` | LLM integration (`gpt-4o-mini`) |
-| **PDFKit** | `0.18.0` | Server-side PDF generation and streaming |
-| **Helmet** | `8.1.0` | HTTP security header hardening |
-| **Express Rate Limit** | `8.4.1` | API rate limiting and brute-force mitigation |
-| **CORS** | `^2.8.5` | Cross-Origin Resource Sharing control |
-| **Dotenv** | `^16.3.1` | Environment variable management |
-| **Multer** | `^1.4.5-lts.1` | Multipart/form-data upload handling |
-| **Axios** | `^1.5.0` | HTTP client for external requests |
-| **Nodemon** *(Dev)* | `^3.0.1` | Hot-reloading development server |
-| **Jest** *(Dev)* | `^29.7.0` | Backend unit and integration testing framework |
-| **Supertest** *(Dev)* | `^6.3.3` | HTTP assertion library for endpoint testing |
-
-### Frontend Technologies
-| Package | Version | Purpose |
-| :--- | :--- | :--- |
-| **React** | `^18.2.0` | Declarative user interface library |
-| **React DOM** | `^18.2.0` | DOM renderer for React |
-| **Vite** | `^5.0.2` | Next-generation frontend build tool and dev server |
-| **React Router DOM** | `^6.16.0` | Client-side routing and navigation guards |
-| **Redux Toolkit** | `^1.9.7` | Global application state management |
-| **React-Redux** | `^8.1.3` | React bindings for Redux state subscription |
-| **Recharts** | `^2.10.3` | Composable charting library for React |
-| **Axios** | `^1.5.0` | Promise-based HTTP client with interceptors |
-| **Tailwind CSS** | `^3.3.5` | Utility-first CSS styling framework |
-| **PostCSS** | `^8.4.31` | CSS transformation pipeline |
-| **Autoprefixer** | `^10.4.16` | CSS vendor prefix automation |
-| **Vitest** *(Dev)* | `^0.34.6` | Vite-native unit testing framework |
-| **Testing Library** *(Dev)* | `^14.1.0` | React component testing utilities |
+Built with **React Native 0.74, Expo SDK 51, and Redux Toolkit**:
+- **Hardware-Backed Security**: Persistent session tokens stored in `expo-secure-store` (backed by Android `EncryptedSharedPreferences`).
+- **5-Tab Navigation**:
+  - `Home`: Editorial financial summary cards, live alerts, and detected transaction alerts.
+  - `Ledger`: Virtualized infinite-scroll ledger with search, category filtering, and manual transaction creation.
+  - `Insights`: Financial Health Snapshot, Expense Forecast, Budget Velocity, Spending Anomalies, Top Merchants, Category Utilization, Recurring Subscriptions, Multi-Month Trends, and AI Financial Advisor.
+  - `Goals`: Savings targets, feasibility analysis, What-If simulations, and AI Action Plans.
+  - `Profile`: User details, account lifetime statistics, and secure sign-out.
+- **Docked Floating Copilot Launcher**: Responsive, non-intrusive floating action dock (`[FinTrack Copilot] [ + ]`) anchored right above the bottom navigation bar, preventing overlap with goal cards or ledger items across 360px, 390px, and 412px device widths.
+- **Mobile PDF Statement Flow**: Direct API integration downloading binary statements to device storage with `expo-sharing` support for WPS Office, Adobe Acrobat, and Google Drive.
 
 ---
 
-## 4. Project Architecture & Directory Structure
+## 9. Automatic Financial Data Ingestion
+
+FinTrack implements an intelligent multi-channel ingestion pipeline:
+
+```
+[ Bank Statement (.csv / .xlsx) ]
+[ SMS Message Text              ]  --> [ Extraction & Normalization ] --> [ Sanitization & PII Masking ] --> [ SHA-256 Deduplication ] --> [ Staged Review Inbox ] --> [ Confirmed Ledger ]
+[ Android Push Notification     ]
+```
+
+### Ingestion Sources
+1. **Bank Statements (CSV, Excel `.xlsx`, `.xls`)**:
+   - Dynamic header aliasing across Indian and international banking formats (HDFC, ICICI, SBI, Axis, Kotak, Chase, Standard Chartered).
+   - Date parser supporting `DD/MM/YYYY`, `YYYY-MM-DD`, `DD-MM-YYYY`, and ISO formats.
+   - Intelligent Debit/Credit balance column reconciliation.
+2. **Financial SMS Ingestion**:
+   - Regex-based parser extracting transaction amounts (INR ₹, $, €), merchant/payee entities, dates, and debit/credit status.
+3. **Android Push Notifications**:
+   - Intercepts banking app notifications via native listener.
+
+### Filtering, Security & Staging
+- **Instant OTP & Non-Financial Rejection**: Discards one-time passwords (OTPs), authentication requests, promotional spam, and balance-only inquiries.
+- **PII Masking**: Redacts bank account numbers (e.g. `A/C ending in XX1234`), card numbers, and personal identifiers before database entry.
+- **SHA-256 Deduplication Engine**: Generates unique fingerprints (`hash(userId + amount + transactionDate + normalizedMerchant)`) preventing duplicate insertions across notification, SMS, and bank statement uploads.
+- **Interactive Staged Review**: Intercepted transactions reside in `staged` status until the user approves (`confirm`), modifies (`edit`), or dismisses (`ignore`) them.
+
+---
+
+## 10. Financial Intelligence Engine
+
+The deterministic intelligence engine strictly operates on **confirmed ledger transactions**, guaranteeing verified numbers:
+- **Income, Expenses & Net Savings**: Exact deterministic sums for the selected calendar month.
+- **Savings Rate**: Safe division formula with zero-income protection: `(Net Savings / Total Income) * 100`.
+- **Expense Run-Rate & Daily Burn Rate**:
+  $$\text{Daily Burn Rate} = \frac{\text{Total Expense MTD}}{\text{Days Elapsed}}$$
+  $$\text{Projected Expense} = \text{Daily Burn Rate} \times \text{Total Days in Month}$$
+- **Budget Velocity & Risk**: Pace tracking comparing spending velocity against target monthly budget (`SAFE`, `ELEVATED`, `CRITICAL`).
+- **Spending Anomalies**: Identifies statistical outliers, sudden category spikes, and budget shocks exceeding 40% of monthly allocation.
+- **Top Merchants & Category Utilization**: Aggregates total spend, transaction counts, average ticket size, and percentage of overall expenses.
+- **Recurring Commitments Detector**: Detects fixed auto-pay obligations (weekly, biweekly, monthly, quarterly) with price increase tracking.
+- **Multi-Month Financial Trends**: Comparative Month-over-Month (MoM) cashflow trajectories across 6-month and 12-month windows.
+
+---
+
+## 11. AI Advisor
+
+Integrated with **Google Gemini (`gemini-2.0-flash`)** with strict grounding:
+- **Verified Facts Prompting**: The AI model is supplied with pre-computed mathematical figures from the deterministic engine.
+- **Zero Arithmetic Delegation**: Gemini is never asked to calculate sums, averages, or balances.
+- **Grounded Advice & Strategic Insights**: Formulates executive summaries, savings opportunities, and category reduction strategies.
+- **Transparent Dual-Engine Fallback**: If Gemini API quota is exceeded or network is offline, the backend automatically generates rule-based deterministic advice, tagging the payload with `provider: "heuristic"`.
+
+---
+
+## 12. Conversational FinTrack Copilot
+
+FinTrack Copilot is a conversational financial assistant providing interactive advisory:
+- **Multi-Turn Contextual Sessions**: Maintains conversation history (`CopilotSession`) scoped by user and reference month.
+- **What-If Scenario Simulation**: Interactively evaluates hypothetical scenarios (e.g., *"What if I reduce Dining by 15% and earn ₹5,000 extra?"*) with real-time recalculation of net savings, savings rate, and run-rate projections.
+- **Contextual Follow-Up Resolution**: Resolves pronoun references (e.g., *"How much did I spend on it?"* following *"What was my highest expense?"*) via intent planning.
+- **Interactive "Explain This" Modals**: Instant one-tap breakdown of any metric or card (Savings Rate, Forecast, Anomalies, Merchants).
+- **Proactive Insights**: Highlights cash flow deficits, rapid burn rates, and subscription hikes directly in dashboard banners.
+
+---
+
+## 13. MCP Architecture
+
+FinTrack implements an **internal JSON-RPC 2.0 Model Context Protocol (MCP) Server** (`server/mcp/server.js`):
+
+```
+[ Copilot Service / LLM Client ] 
+               |
+      (JSON-RPC 2.0 Request)
+               v
+[ FinTrack Native MCP Server ]
+   ├── authContext (User JWT & ID Scoping)
+   ├── Read-Only Financial Tool Registry:
+   │     ├── get_monthly_summary
+   │     ├── get_category_breakdown
+   │     ├── get_spending_anomalies
+   │     ├── get_expense_forecast
+   │     ├── get_recurring_subscriptions
+   │     └── run_what_if_simulation
+   └── Response Serialization & Grounding
+```
+
+### Architectural Guarantees:
+- **Read-Only Enforcement**: Tools only read confirmed ledger data; no write, update, or delete operations are permitted through MCP.
+- **User Isolation**: All tool calls strictly require verified user authentication context.
+- **Deterministic Tool Execution**: Tools invoke the backend calculation services directly, returning exact JSON structures.
+
+---
+
+## 14. LLM Cost & Performance Optimization
+
+To achieve low latency and minimal API overhead, FinTrack implements an optimization layer (`server/services/llmOptimizationService.js`):
+1. **Deterministic Fast-Path Routing**: Standard factual queries (e.g., *"What was my total spend in September?"*) are answered directly by local MCP tools in <15ms without invoking Gemini.
+2. **In-Flight Request Deduplication**: Concurrent identical queries share a single active execution promise.
+3. **Multi-Tier Response Cache**: Caches identical query responses with smart invalidation upon transaction mutations.
+4. **Exponential Backoff & Error Classification**: Gracefully retries transient network errors while instantly falling back on 429 quota exhaustion.
+5. **Privacy-Preserving Telemetry**: Logs latency, token usage, tool call counts, and provider tags without storing sensitive financial payload data.
+
+---
+
+## 15. Goals & Action Plans
+
+### Financial Goals (`/api/goals`)
+- Create savings milestones (e.g., Emergency Fund, Vacation, Down Payment) with target dates and amounts.
+- **Deterministic Feasibility Scoring**:
+  - `Target Achieved`: Current savings $\ge$ target amount.
+  - `On Track`: Verified monthly net savings comfortably exceed required monthly contribution.
+  - `Challenging`: Monthly required contribution exceeds 60% of net monthly savings.
+  - `Low Feasibility`: Monthly required contribution exceeds 100% of current net savings.
+  - `At Risk`: User currently in monthly cash deficit.
+
+### AI Action Plans (`/api/action-plans`)
+- Generates verified, actionable steps from confirmed ledger facts.
+- Computes measurable monthly impact (₹/mo) and cumulative 6-month projected savings.
+- Trackable status workflow: `Active`, `Completed`, `Dismissed`.
+
+---
+
+## 16. PDF Financial Reports
+
+- **Server-Side PDFKit Engine** (`server/controllers/reportController.js`): Generates downloadable financial statements for any selected month.
+- **Document Structure**:
+  - Branded header with metadata (period, generation timestamp, account name).
+  - Executive Financial Position (Income, Expense, Net Savings, Savings Rate).
+  - Category Utilization & Limits breakdown table.
+  - Complete chronological transaction record with formatted currency and status badges.
+- **Transport & Storage Pipeline**:
+  - Web: Direct binary streaming blob download.
+  - Mobile: Base64/binary transport saved to device file system with native sharing support (`expo-sharing`).
+
+---
+
+## 17. Security Architecture & Hardening
+
+1. **Authentication & Password Security**:
+   - JWT authentication tokens with configurable expiration (`JWT_EXPIRE`).
+   - `bcrypt` cryptographic password hashing (salt factor 10).
+2. **User Data Isolation**:
+   - Every database query strictly scopes documents by `{ userId: req.userId }`.
+3. **HTTP & API Hardening**:
+   - `helmet` security headers enabled.
+   - `express-rate-limit` protecting API endpoints (300 req / 15 min).
+   - Restricted CORS whitelisting (`FRONTEND_URL`, localhost, Expo development schemes).
+4. **Mobile Platform Security**:
+   - `expo-secure-store` with hardware-backed encryption.
+   - Android cleartext traffic blocked in release builds (local development hosts permitted via `network_security_config.xml`).
+5. **PII Sanitization & Logging**:
+   - Automated masking of card and account digits in notifications and SMS.
+   - Production error handler suppressing stack traces and internal database schemas.
+
+---
+
+## 18. UI/UX Design System
+
+- **Web Application**:
+  - Curated high-contrast slate & emerald palette (`#0B0F17`, `#131B2B`, `#10B981`, `#6366F1`).
+  - Fluid glassmorphic cards, responsive sidebar navigation, and interactive Recharts tooltips.
+- **Mobile Application**:
+  - Crisp, modern light theme with semantic emerald (`#10B981`), sapphire (`#2563EB`), and danger (`#EF4444`) accents.
+  - High-performance virtualized lists with debounced search inputs.
+  - Fully responsive layout verified across 360 × 800, 390 × 844, and 412 × 915 Android viewports.
+  - Docked floating Copilot hub positioned safely above bottom navigation tabs.
+
+---
+
+## 19. Technology Stack
+
+### Web Frontend
+- **Framework**: React 18 (Vite)
+- **State Management**: Redux Toolkit & React-Redux
+- **Routing**: React Router DOM v6
+- **Styling**: Tailwind CSS, PostCSS, Vanilla CSS Tokens
+- **Visualizations**: Recharts
+- **Icons**: Lucide React
+- **HTTP Client**: Axios with JWT request/response interceptors
+
+### Mobile Frontend (Android)
+- **Framework**: React Native 0.74 / Expo SDK 51
+- **State Management**: Redux Toolkit
+- **Navigation**: React Navigation (Native Stack & Bottom Tabs)
+- **Security**: Expo SecureStore
+- **File & Sharing**: Expo DocumentPicker, Expo Sharing, Expo FileSystem
+- **Icons**: Expo Vector Icons (Feather)
+
+### Backend Server
+- **Runtime**: Node.js (ES Modules `"type": "module"`)
+- **Framework**: Express.js
+- **Database ODM**: Mongoose 7
+- **Security**: Helmet, Express Rate Limit, CORS, JSONWebToken, Bcrypt
+- **File Parsing**: Multer, `csv-parser`, `xlsx`
+- **PDF Generation**: PDFKit
+
+### AI & Protocols
+- **Primary LLM**: Google Gemini API (`gemini-2.0-flash`) via REST API
+- **Protocol**: Model Context Protocol (MCP) JSON-RPC 2.0
+- **Fallback Engine**: Local Deterministic Heuristic Intelligence Engine
+
+### Testing Frameworks
+- **Backend**: Jest, Supertest
+- **Web Frontend**: Vitest, React Testing Library
+- **Mobile**: Jest, Jest-Expo, React Test Renderer
+
+---
+
+## 20. API Architecture
+
+| Method | Endpoint | Auth | Purpose |
+| :--- | :--- | :--- | :--- |
+| **POST** | `/api/auth/signup` | No | Register new account & issue JWT |
+| **POST** | `/api/auth/login` | No | Verify credentials & issue JWT |
+| **GET** | `/api/auth/me` | Yes | Get authenticated user profile |
+| **PUT** | `/api/auth/profile` | Yes | Update user profile name/email |
+| **PUT** | `/api/auth/password` | Yes | Update password with current password verification |
+| **GET** | `/api/auth/stats` | Yes | Lifetime account summary statistics |
+| **GET** | `/api/transactions` | Yes | Get transactions with search, filter & pagination |
+| **POST** | `/api/transactions` | Yes | Create manual transaction |
+| **PUT** | `/api/transactions/:id` | Yes | Update transaction |
+| **DELETE** | `/api/transactions/:id` | Yes | Delete transaction |
+| **POST** | `/api/imports/upload` | Yes | Ingest CSV / XLSX bank statement |
+| **POST** | `/api/imports/sms` | Yes | Ingest bulk financial SMS text |
+| **GET** | `/api/imports/staged` | Yes | List staged transactions pending review |
+| **POST** | `/api/imports/confirm/:id`| Yes | Confirm staged transaction to ledger |
+| **POST** | `/api/imports/confirm-all`| Yes | Bulk confirm staged transactions |
+| **DELETE**| `/api/imports/ignore/:id` | Yes | Dismiss staged transaction |
+| **POST** | `/api/mobile/events` | Yes | Ingest Android push notification event |
+| **GET** | `/api/mobile/events/stats`| Yes | Get mobile interception & duplicate stats |
+| **GET** | `/api/budget` | Yes | Get monthly budget & category caps |
+| **POST** | `/api/budget` | Yes | Set monthly budget & category caps |
+| **GET** | `/api/dashboard/summary` | Yes | Dashboard KPI aggregation |
+| **GET** | `/api/intelligence/summary`| Yes | Banking Intelligence metrics & forecast |
+| **GET** | `/api/intelligence/trends` | Yes | Multi-month comparative trajectory |
+| **GET** | `/api/intelligence/subscriptions` | Yes | Recurring commitments & obligations |
+| **GET** | `/api/ai-advisor/advice` | Yes | Grounded AI Financial Advisor |
+| **POST** | `/api/ai-advisor/query` | Yes | Financial Q&A with verified facts |
+| **POST** | `/api/ai-advisor/what-if` | Yes | Deterministic What-If scenario simulation |
+| **POST** | `/api/copilot/chat` | Yes | Conversational FinTrack Copilot message |
+| **POST** | `/api/copilot/explain` | Yes | Contextual "Explain This" metric analysis |
+| **GET** | `/api/copilot/insights` | Yes | Proactive financial notifications |
+| **GET** | `/api/goals` | Yes | List savings goals with feasibility |
+| **POST** | `/api/goals` | Yes | Create savings goal |
+| **PUT** | `/api/goals/:id` | Yes | Update savings goal |
+| **DELETE**| `/api/goals/:id` | Yes | Delete savings goal |
+| **GET** | `/api/action-plans` | Yes | List AI financial action plans |
+| **POST** | `/api/action-plans/generate` | Yes | Generate action plans from verified facts |
+| **PATCH**| `/api/action-plans/:id/status` | Yes | Update action plan status |
+| **GET** | `/api/reports` | Yes | Monthly financial report (JSON or PDF stream) |
+
+---
+
+## 21. Database Models
+
+1. **`User`**: `name`, `email` (unique index), `password` (bcrypt hash), `createdAt`, `updatedAt`.
+2. **`Transaction`**: `userId` (indexed), `title`, `amount`, `type` (`income`/`expense`), `category`, `paymentMethod`, `transactionDate`, `status` (`staged`/`confirmed`/`ignored`), `source` (`manual`/`csv`/`excel`/`sms`/`notification`), `fingerprint` (indexed), `rawText`, `isDuplicate`.
+3. **`Budget`**: `userId` (unique index), `monthlyBudget`, `categoryBudgets` (`[{ category, limit }]`).
+4. **`Goal`**: `userId`, `title`, `targetAmount`, `currentAmount`, `targetDate`, `category`, `priority`, `status` (`in_progress`/`completed`/`paused`/`cancelled`), `notes`.
+5. **`ActionPlan`**: `userId`, `title`, `description`, `actionType`, `category`, `priority`, `targetAmount`, `monthlyImpact`, `potentialSixMonthImpact`, `rationale`, `status` (`active`/`completed`/`dismissed`).
+6. **`CopilotSession`**: `userId`, `month`, `messages` (`[{ role, content, suggestedFollowUps, timestamp }]`), `sessionSummary`.
+7. **`ImportBatch`**: `userId`, `filename`, `sourceType`, `totalRecords`, `stagedCount`, `confirmedCount`, `duplicateCount`.
+
+---
+
+## 22. Testing & Validation
+
+### Automated Test Suite Totals
+- **Backend Automated Tests (Jest / Supertest)**: **31 test suites**, **564 passing tests** verifying auth, ingestion, banking intelligence, subscriptions, forecasting, goals, action plans, security headers, rate limiting, duplicate hashing, MCP server tools, and LLM optimization.
+- **Web Frontend Tests (Vitest / React Testing Library)**: **22 test suites**, **115 passing tests** verifying dashboard charts, transaction forms, budget progress bars, report downloads, goal feasibility calculations, and Redux slice states.
+- **Mobile Test Suite (Jest-Expo / React Test Renderer)**: **38 test suites**, **284 passing tests** verifying mobile components, responsive headers, formatting, offline storage, transaction detail modals, month pickers, and copilot flows.
+
+### Physical Device Validation
+- **Device Tested**: Android Physical Hardware (`CPH2381` / Oppo Reno7 5G, Android 13/14).
+- **Tested Viewports**: `360 × 800`, `390 × 844`, `412 × 915`.
+- **Validation Checklist**:
+  - [x] Zero header collisions across all Insights intelligence cards.
+  - [x] Floating Copilot dock docked above bottom navigation with zero obstruction of Goal feasibility metrics.
+  - [x] Filter pills horizontal edge-to-edge scrolling with zero end-chip clipping.
+  - [x] Real-time notification interception and background deduplication.
+  - [x] OTP and security SMS instant rejection.
+  - [x] Monthly PDF report download, local storage verification, and native viewer opening (`expo-sharing`).
+  - [x] Conversational Copilot session persistence and What-If scenario calculations.
+
+---
+
+## 23. Current Implementation Status
+
+| Feature / Module | Status | Notes |
+| :--- | :---: | :--- |
+| **User Authentication & Authorization** | **COMPLETE** | JWT auth, bcrypt password hashing, profile management |
+| **Transaction CRUD & Pagination** | **COMPLETE** | Multi-field search, category filters, sorting, virtualized FlatList |
+| **Bank Statement Ingestion (CSV/Excel)** | **COMPLETE** | Dynamic header aliasing, Indian date parser, staging inbox |
+| **SMS Financial Ingestion** | **COMPLETE** | Entity extraction, debit/credit parser, PII masking |
+| **Android Push Notification Ingestion** | **COMPLETE** | Background interception, OTP rejection, deduplication |
+| **Deduplication Engine** | **COMPLETE** | SHA-256 fingerprinting across all ingestion channels |
+| **Category Budgeting & Limit Tracking** | **COMPLETE** | Monthly ceiling, category caps, visual threshold alerts |
+| **Deterministic Financial Core** | **COMPLETE** | Income, expense, net savings, burn rate, run-rate forecast |
+| **Predictive Analytics & Anomalies** | **COMPLETE** | Outlier detection, budget shocks, confidence estimation |
+| **Recurring Subscriptions Detector** | **COMPLETE** | Cadence detection (weekly to quarterly), price hike alerts |
+| **Multi-Month Financial Trends** | **COMPLETE** | 6M and 12M comparative MoM trajectories |
+| **Google Gemini AI Advisor** | **COMPLETE** | Grounded financial summaries with heuristic fallback |
+| **Conversational FinTrack Copilot** | **COMPLETE** | Multi-turn sessions, What-If simulator, Explain This modals |
+| **Model Context Protocol (MCP) Server**| **COMPLETE** | Native JSON-RPC 2.0 server with 6 read-only financial tools |
+| **LLM Optimization & Fast-Path** | **COMPLETE** | In-flight deduplication, deterministic routing, response cache |
+| **Financial Goals & Feasibility** | **COMPLETE** | Target tracking with deterministic status evaluations |
+| **Action Plans Generator** | **COMPLETE** | Verified financial steps with measurable monthly/6M impact |
+| **Branded PDF Report Generator** | **COMPLETE** | Server-side PDFKit stream, client download, mobile sharing |
+| **Security Hardening** | **COMPLETE** | Helmet, CORS, Rate Limit, SecureStore, cleartext protection |
+| **React (Vite) Web Client** | **COMPLETE** | Responsive glassmorphic dashboard, Recharts, Redux Toolkit |
+| **React Native (Expo) Mobile App** | **COMPLETE** | Validated on physical Android CPH2381, docked Copilot |
+| **Cloud Hosting & Production Deployment**| **PENDING** | Local development verified; cloud deployment pending |
+
+---
+
+## 24. Project Directory Structure
 
 ```
 Finance-Tracker-Initial-Codes/
-├── client/
-│   ├── index.html
+├── client/                        # React (Vite) Web Application
+│   ├── src/
+│   │   ├── components/            # UI components (dashboard, goals, copilot, etc.)
+│   │   ├── pages/                 # Route pages (Dashboard, Transactions, Insights, etc.)
+│   │   ├── redux/                 # Redux Toolkit store & feature slices
+│   │   ├── services/              # Axios API service endpoints
+│   │   └── test/                  # Web unit and component test suites (Vitest)
 │   ├── package.json
-│   ├── postcss.config.cjs
-│   ├── tailwind.config.js
-│   ├── vite.config.js
-│   ├── reading_naterial_fin_tracker.md
-│   └── src/
-│       ├── App.css
-│       ├── App.jsx
-│       ├── index.css
-│       ├── main.jsx
-│       ├── components/
-│       │   ├── ai/                      # [Empty directory]
-│       │   ├── budget/                  # [Empty directory]
-│       │   ├── common/                  # [Empty directory]
-│       │   ├── dashboard/
-│       │   │   └── SummaryCard.jsx      # Implemented metric card component
-│       │   ├── layout/
-│       │   │   ├── Layout.jsx           # App layout shell
-│       │   │   ├── Navbar.jsx           # Top navigation bar
-│       │   │   └── Sidebar.jsx          # Side navigation bar
-│       │   ├── reports/                 # [Empty directory]
-│       │   └── transactions/            # [Empty directory]
-│       ├── config/                      # [Empty directory]
-│       ├── hooks/                       # [Empty directory]
-│       ├── pages/
-│       │   ├── Budget.jsx               # Monthly & category budget page
-│       │   ├── Dashboard.jsx            # Financial overview & analytics dashboard
-│       │   ├── Insights.jsx             # AI & rule-based recommendations page
-│       │   ├── Login.jsx                # User login page
-│       │   ├── Profile.jsx              # Account details & password update page
-│       │   ├── Reports.jsx              # Monthly statements & PDF export page
-│       │   ├── Signup.jsx               # User registration page
-│       │   └── Transactions.jsx         # Transaction CRUD & filtering page
-│       ├── redux/
-│       │   ├── store.js                 # Redux store configuration
-│       │   └── slices/
-│       │       ├── authSlice.js         # Auth state, thunks, and reducers
-│       │       ├── budgetSlice.js       # Budget state, thunks, and reducers
-│       │       ├── insightSlice.js      # AI insights & prediction state
-│       │       └── transactionSlice.js  # Transaction CRUD state & pagination
-│       ├── routes/                      # [Empty directory]
-│       ├── services/
-│       │   ├── aiService.js             # AI insights and prediction API calls
-│       │   ├── api.js                   # Axios client instance with interceptors
-│       │   ├── authService.js           # Authentication API calls
-│       │   ├── budgetService.js         # Budget CRUD API calls
-│       │   ├── dashboardService.js      # Dashboard summary API calls
-│       │   ├── reportService.js         # Report & PDF download API calls
-│       │   └── transactionService.js    # Transaction CRUD API calls
-│       └── utils/
-│           └── format.js                # Currency, date formatting, and constants
-└── server/
-    ├── .env                             # Environment configuration (local)
-    ├── .env.example                     # Environment configuration template
-    ├── .gitignore
-    ├── app.js                           # Express application & middleware setup
-    ├── package.json
-    ├── server.js                        # HTTP server listener & DB starter
-    ├── config/                          # [Empty directory]
-    ├── controllers/
-    │   ├── aiController.js              # AI & prediction controllers (stubs)
-    │   ├── authController.js            # Auth & account controllers (stubs)
-    │   ├── budgetController.js          # Budget controllers (stubs)
-    │   ├── dashboardController.js       # Dashboard summary controller (stub)
-    │   ├── reportController.js          # Report & PDF stream controller (stub)
-    │   └── transactionController.js     # Transaction CRUD controllers (stubs)
-    ├── middleware/
-    │   └── authMiddleware.js            # JWT protection middleware (stub)
-    ├── models/
-    │   ├── Budget.js                    # Budget Mongoose model (empty schema)
-    │   ├── Transaction.js               # Transaction Mongoose model (empty schema)
-    │   └── User.js                      # User Mongoose model (empty schema)
-    ├── routes/
-    │   ├── aiRoutes.js                  # AI route definitions
-    │   ├── authRoutes.js                # Auth route definitions
-    │   ├── budgetRoutes.js              # Budget route definitions
-    │   ├── dashboardRoutes.js           # Dashboard route definitions
-    │   ├── reportRoutes.js              # Report route definitions
-    │   └── transactionRoutes.js         # Transaction route definitions
-    ├── services/
-    │   ├── aiService.js                 # OpenAI / Heuristic AI provider (stub)
-    │   └── financeAnalyzer.js           # Deterministic analytics engine (stub)
-    └── utils/                           # [Empty directory]
+│   └── vite.config.js
+├── mobile/                        # React Native (Expo) Android Application
+│   ├── src/
+│   │   ├── components/            # Mobile UI components (insights, goals, copilot, etc.)
+│   │   ├── navigation/            # BottomTab & NativeStack navigators
+│   │   ├── screens/               # Screen views (Home, Ledger, Insights, Goals, Profile)
+│   │   ├── services/              # API services & SecureStore storage
+│   │   ├── store/                 # Redux Toolkit mobile store & slices
+│   │   └── theme/                 # Mobile typography, colors, and layout tokens
+│   ├── tests/                     # Mobile component and unit test suites (Jest-Expo)
+│   ├── app.json                   # Expo configuration & Android permissions
+│   └── package.json
+├── server/                        # Express.js / Node.js Backend Application
+│   ├── controllers/               # Route controllers (auth, transactions, copilot, etc.)
+│   ├── mcp/                       # Native JSON-RPC 2.0 MCP Server & LLM Client
+│   ├── middleware/                # JWT auth, error handlers, rate limiters
+│   ├── models/                    # Mongoose database schemas (User, Transaction, etc.)
+│   ├── routes/                    # Express REST route definitions
+│   ├── services/                  # Deterministic calculation engines & Gemini client
+│   ├── tests/                     # Backend automated test suites (Jest / Supertest)
+│   ├── app.js                     # Express application configuration
+│   ├── server.js                  # HTTP server listener
+│   ├── package.json
+│   └── .env.example               # Backend environment variable template
+├── docs/                          # Architectural reports and audit documentation
+├── test_files/                    # Synthetic sample statement files (CSV, XLSX)
+└── README.md                      # Project documentation
 ```
 
 ---
 
-## 5. Database Structure & Data Models
-
-All models reside in `server/models/`. In the existing code, all three models instantiate empty Mongoose schemas `new mongoose.Schema({})`. Below are the documented planned schemas based on the source code specifications:
-
-### 1. User Model (`server/models/User.js`)
-- **Collection Name**: `users`
-- **Schema Specification**:
-  ```javascript
-  {
-    name: { type: String, required: true, trim: true },
-    email: { 
-      type: String, 
-      required: true, 
-      unique: true, 
-      lowercase: true, 
-      match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please provide a valid email'] 
-    },
-    password: { type: String, required: true, minlength: 6, select: false },
-    createdAt: { type: Date, default: Date.now },
-    updatedAt: { type: Date, default: Date.now }
-  }
-  ```
-- **Indexes**: `{ email: 1 }` (Unique).
-- **Hooks & Methods**:
-  - `pre('save')`: Hashes modified passwords with `bcrypt.genSalt(10)` and updates `updatedAt`.
-  - `methods.matchPassword`: Compares plaintext password with stored hash via `bcrypt.compare`.
-
-### 2. Transaction Model (`server/models/Transaction.js`)
-- **Collection Name**: `transactions`
-- **Schema Specification**:
-  ```javascript
-  {
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    type: { type: String, enum: ['income', 'expense'], required: true },
-    title: { type: String, required: true, trim: true },
-    amount: { type: Number, required: true, min: 0 },
-    category: { type: String, required: true },
-    paymentMethod: { 
-      type: String, 
-      enum: ['cash', 'card', 'bank_transfer', 'upi', 'wallet', 'other'], 
-      default: 'card' 
-    },
-    description: { type: String, trim: true },
-    transactionDate: { type: Date, required: true, default: Date.now },
-    createdAt: { type: Date, default: Date.now }
-  }
-  ```
-- **Indexes**:
-  - Compound Index: `{ userId: 1, transactionDate: -1 }` (Timeline sorting)
-  - Compound Index: `{ userId: 1, type: 1 }` (Income vs Expense filtering)
-  - Compound Index: `{ userId: 1, category: 1 }` (Category breakdown aggregation)
-
-### 3. Budget Model (`server/models/Budget.js`)
-- **Collection Name**: `budgets`
-- **Schema Specification**:
-  ```javascript
-  {
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, unique: true },
-    monthlyBudget: { type: Number, required: true, min: 0 },
-    categoryBudgets: [
-      {
-        category: { type: String, required: true },
-        limit: { type: Number, required: true, min: 0 }
-      }
-    ],
-    createdAt: { type: Date, default: Date.now },
-    updatedAt: { type: Date, default: Date.now }
-  }
-  ```
-- **Indexes**: `{ userId: 1 }` (Unique per user).
-
----
-
-## 6. API Endpoints & Routing Specification
-
-All routes are mounted under the `/api` prefix in `server/app.js`:
-
-| Method | Endpoint | Auth Required | Description | Controller Status |
-| :--- | :--- | :--- | :--- | :--- |
-| **GET** | `/health` | No | Basic server liveness check | **Implemented** |
-| **POST** | `/api/auth/signup` | No | Register new user account & issue JWT | Stub (Empty) |
-| **POST** | `/api/auth/login` | No | Authenticate user & issue JWT | Stub (Empty) |
-| **GET** | `/api/auth/me` | Yes (`protect`) | Retrieve profile of authenticated user | Stub (Empty) |
-| **PUT** | `/api/auth/profile` | Yes (`protect`) | Update user name and email | Stub (Empty) |
-| **PUT** | `/api/auth/password` | Yes (`protect`) | Update password with old password check | Stub (Empty) |
-| **GET** | `/api/auth/stats` | Yes (`protect`) | Aggregate user transaction & savings stats | Stub (Empty) |
-| **POST** | `/api/transactions` | Yes (`protect`) | Create a new income/expense transaction | Stub (Empty) |
-| **GET** | `/api/transactions` | Yes (`protect`) | List transactions with filters, sort, search, pagination | Stub (Empty) |
-| **PUT** | `/api/transactions/:id`| Yes (`protect`) | Update existing transaction by ID | Stub (Empty) |
-| **DELETE**| `/api/transactions/:id`| Yes (`protect`)| Delete transaction by ID | Stub (Empty) |
-| **POST** | `/api/budget` | Yes (`protect`) | Set or upsert monthly and category budgets | Stub (Empty) |
-| **GET** | `/api/budget` | Yes (`protect`) | Fetch current user budget configurations | Stub (Empty) |
-| **PUT** | `/api/budget` | Yes (`protect`) | Update existing budget configurations | Stub (Empty) |
-| **GET** | `/api/dashboard/summary`| Yes (`protect`)| Get summary cards, trend, category split, recent items | Stub (Empty) |
-| **GET** | `/api/reports/monthly` | Yes (`protect`) | Retrieve monthly report data or binary PDF stream (`format=pdf`)| Stub (Empty) |
-| **POST** | `/api/ai/insights` | Yes (`protect`) | Generate financial insights via OpenAI or heuristic engine | Stub (Empty) |
-| **POST** | `/api/ai/predict` | Yes (`protect`) | Predict future expense & evaluate budget risk | Stub (Empty) |
-
----
-
-## 7. Authentication & Authorization Flow
-
-### 1. Token Mechanism
-- **JWT Signing**: Signs payload `{ id: user._id }` using secret key `JWT_SECRET` with expiry `JWT_EXPIRE` (default `7d`).
-- **Authorization Header**: Client includes token in HTTP requests: `Authorization: Bearer <token>`.
-
-### 2. Client-Side Authentication Handling (`client/src/services/api.js`)
-- **Request Interceptor**: Reads `token` from `localStorage` and appends `Authorization: Bearer <token>` to request headers.
-- **Response Interceptor**: Intercepts HTTP `401 Unauthorized` responses and automatically purges `token` and `user` keys from `localStorage`.
-
-### 3. Current Implementation Status of Auth
-- **Client Interceptors**: **Implemented** in `client/src/services/api.js`.
-- **Backend Middleware (`protect`)**: **Not Implemented (Stub)**. The `authMiddleware.js` file currently contains only pseudocode. It does not extract headers, verify signatures, or call `next()`.
-- **Route Guarding (`ProtectedRoute`)**: **Not Implemented (Stub)**. The `ProtectedRoute` component in `client/src/App.jsx` is not rendered.
-
----
-
-## 8. AI Integration & Insight Generation
-
-### Architecture & Fallback Mechanism
-The application defines a **dual-tier AI analysis engine** in `server/services/aiService.js` designed to ensure that insight generation never fails even if third-party AI APIs are unreachable or unconfigured:
-
-```
-                          [User Financial Data]
-                                    |
-                                    v
-                       [financeAnalyzer.js Engine]
-                    (Deterministic summary & metrics)
-                                    |
-                                    v
-                     [Check OpenAI Key Availability]
-                                    |
-                  +-----------------+-----------------+
-                  | (Key Present)                     | (Key Missing / Error)
-                  v                                   v
-        [OpenAI API Request]               [Heuristic Rules Engine]
-     Model: gpt-4o-mini                     - Top Category Overspending
-     Temp: 0.4                              - Budget Usage Ratios
-     Prompt: Formatted JSON Metrics         - Savings Rate Analysis
-                  |                                   |
-                  +-----------------+-----------------+
-                                    |
-                                    v
-                       [Consolidated Insights Array]
-```
-
-### Current Status
-- Both `generateAIInsights` and `predictExpense` in `server/services/aiService.js` are currently stubs with pseudocode comments.
-
----
-
-## 9. Expense Prediction Methodology
-
-The planned expense forecasting system in `financeAnalyzer.js` and `aiService.js` operates as follows:
-
-1. **Monthly Bucketing**: Historical transactions are grouped by calendar month (`YYYY-MM`).
-2. **Monthly Expense Averaging**: Computes average total monthly expense across past recorded months. If only one month exists, it defaults to current total expenses.
-3. **Confidence Score Calculation**:
-   - Computes data volume reliability based on transaction density and history.
-   - Normalizes and clamps the confidence score between **55%** and **95%**.
-4. **Budget Risk Assessment**:
-   - Sets `budgetRisk: true` if `predictedExpense > monthlyBudget`.
-   - Generates actionable savings recommendations to reduce high-spending categories.
-
----
-
-## 10. Budget & Financial Analytics Engine
-
-The financial analytics engine (`server/services/financeAnalyzer.js`) is designed to compute the following metrics:
-
-- **Total Income**: Sum of all transactions where `type === 'income'`.
-- **Total Expense**: Sum of all transactions where `type === 'expense'`.
-- **Net Savings**: `totalIncome - totalExpense`.
-- **Remaining Budget**: `monthlyBudget - totalExpense` (falls back to net savings if no budget is set).
-- **Category Breakdown**: Aggregated expense totals per category, sorted in descending order of spending.
-- **Monthly Spending Trend**: Aggregated income and expenses grouped chronologically by month (`YYYY-MM`).
-
----
-
-## 11. PDF & Report Generation Engine
-
-### Server-Side Generation (`server/controllers/reportController.js`)
-- Uses the `pdfkit` library to create and stream PDF documents.
-- When query parameter `format === 'pdf'` is received:
-  - Sets HTTP response headers: `Content-Type: application/pdf` and `Content-Disposition: attachment; filename="monthly-report-<period>.pdf"`.
-  - Pipes the `PDFDocument` directly to Express `res`.
-  - Renders:
-    1. Report Header with Title and Selected Period (`YYYY-MM`).
-    2. High-level Financial Summary (Income, Expense, Savings, Remaining Budget).
-    3. Category Spending Breakdown Table.
-    4. Recent Transactions List (limited to the first 40 entries).
-
-### Client-Side Download (`client/src/services/reportService.js` & `Reports.jsx`)
-- Axios sends request with `responseType: 'blob'`.
-- Client creates a temporary Object URL (`window.URL.createObjectURL(blob)`), creates an invisible `<a>` element, triggers download, and revokes the URL.
-
----
-
-## 12. Security & Protection Mechanisms
-
-### Present in Active Code:
-- **HTTP Security Headers**: `helmet()` configured in `server/app.js`.
-- **CORS Whitelisting**: Strict origin checking in `server/app.js` validating incoming requests against `FRONTEND_URL` and `http://127.0.0.1:5173`.
-- **API Rate Limiting**: `express-rate-limit` configured to limit requests to 300 per 15 minutes per IP address.
-- **Client Token Eviction**: Automatic deletion of `token` and `user` keys from `localStorage` upon receiving 401 responses.
-
-### Security Gaps to Address:
-- `authMiddleware.js` (`protect`) must be implemented to verify JWT signatures and reject unauthorized requests.
-- Passwords must be hashed using `bcrypt` in `User.js` pre-save hooks and verified during login.
-- Sensitive environment credentials must never be committed to source control.
-
----
-
-## 13. Frontend-Backend Communication
-
-1. **Protocol & Format**: RESTful API over HTTP using JSON for all data exchanges and binary stream (`application/pdf`) for report exports.
-2. **Development Proxy**: Vite dev server proxies `/api` requests to `http://localhost:5000` (`client/vite.config.js`).
-3. **Standard Response Structure**:
-   ```json
-   {
-     "success": true,
-     "message": "Operation description",
-     "data": {},
-     "pagination": {
-       "page": 1,
-       "limit": 10,
-       "total": 50,
-       "pages": 5
-     }
-   }
-   ```
-4. **Standard Error Structure**:
-   ```json
-   {
-     "success": false,
-     "message": "Error description message"
-   }
-   ```
-
----
-
-## 14. Environment Variables
-
-The application utilizes environment variables for configuration. Create `.env` files in the respective directories based on the required keys below.
-
-### Backend (`server/.env`)
-```ini
-NODE_ENV=
-PORT=
-MONGODB_URI=
-JWT_SECRET=
-JWT_EXPIRE=
-OPENAI_API_KEY=
-OPENAI_MODEL=
-FRONTEND_URL=
-```
-
-### Frontend (`client/.env` - Optional)
-```ini
-VITE_API_URL=
-```
-*(Defaults to `http://localhost:5000/api` if not specified)*
-
----
-
-## 15. Installation & Setup Guide
+## 25. Local Development Setup
 
 ### Prerequisites
 - **Node.js**: v18.0.0 or higher
 - **npm**: v9.0.0 or higher
-- **MongoDB**: Local MongoDB instance (v6.0+) or MongoDB Atlas connection URI
+- **MongoDB**: Local instance running on `mongodb://localhost:27017` or MongoDB Atlas URI
+- **Expo Go App / Android Device** (for mobile development)
 
-### Step 1: Clone or Open the Workspace
-Navigate to the project root directory:
-```bash
-cd "d:/Major project/Finance-Tracker-Initial-Codes"
-```
-
-### Step 2: Install Backend Dependencies
+### 1. Backend Setup (`server/`)
 ```bash
 cd server
 npm install
-```
-
-### Step 3: Configure Backend Environment
-Copy `.env.example` to `.env` inside the `server/` directory and configure your database URI, JWT secret, and optional OpenAI API key:
-```bash
 cp .env.example .env
+# Configure your MONGODB_URI, JWT_SECRET, and GEMINI_API_KEY in .env
+npm run dev
+# Server starts on http://localhost:5000
 ```
 
-### Step 4: Install Frontend Dependencies
+### 2. Web Frontend Setup (`client/`)
 ```bash
-cd ../client
+cd client
 npm install
-```
-
----
-
-## 16. Running the Application
-
-### Running the Backend Server
-From the `server/` directory:
-```bash
-# Development mode with Nodemon (auto-reload)
 npm run dev
-
-# Production mode
-npm start
+# Web application starts on http://localhost:5173
 ```
-The server will start on `http://localhost:5000` (or the configured `PORT`).
 
-### Running the Frontend Client
-From the `client/` directory:
+### 3. Mobile Android Setup (`mobile/`)
 ```bash
-# Start Vite development server
-npm run dev
-
-# Build for production
-npm run build
-
-# Preview production build
-npm run preview
+cd mobile
+npm install
+npx expo start
+# Press 'a' to open in Android emulator or scan QR code via Expo Go on physical device
 ```
-The client will start on `http://localhost:5173`.
 
----
+### Running Test Suites
+```bash
+# Run backend tests
+cd server && npm test
 
-## 17. Current Known Errors & Bottlenecks
+# Run web frontend tests
+cd client && npm test
 
-1. **Request Hanging on Protected Routes**:
-   - `server/middleware/authMiddleware.js` contains an empty `protect` function. When protected routes are requested, the middleware neither calls `next()` nor returns a response, causing requests to hang until timeout.
-2. **Empty Database Schemas**:
-   - `server/models/User.js`, `Transaction.js`, and `Budget.js` instantiate empty schemas (`new mongoose.Schema({})`). Any attempted database inserts will not validate fields, types, or indexes.
-3. **Empty Redux Store Reducer Map**:
-   - `client/src/redux/store.js` defines `reducer: {}`. Redux state slices are not registered, causing any state selectors (`state.auth`, `state.transactions`, etc.) to return `undefined`.
-4. **Unrendered React Routes**:
-   - `client/src/App.jsx` does not declare `<Route>` elements inside `<Routes>`, meaning the client renders an empty page regardless of the URL path.
-5. **Commented-Out UI Implementations**:
-   - All 8 page components in `client/src/pages/` contain commented-out logic and JSX, rendering only static shell containers without working inputs, buttons, tables, or charts.
-
----
-
-## 18. Missing Functionality & Code Gaps
-
-### Backend Gaps
-1. `server/middleware/authMiddleware.js`: Token extraction from `Authorization` header, `jwt.verify` verification, setting `req.userId`, and handling 401 errors.
-2. `server/models/User.js`: Schema properties (`name`, `email`, `password`, `createdAt`, `updatedAt`), pre-save hashing hook, and `matchPassword` method.
-3. `server/models/Transaction.js`: Schema properties (`userId`, `type`, `title`, `amount`, `category`, `paymentMethod`, `description`, `transactionDate`), enum constraints, and compound indexes.
-4. `server/models/Budget.js`: Schema properties (`userId`, `monthlyBudget`, `categoryBudgets`), and uniqueness index.
-5. `server/controllers/authController.js`: Implementation of `signup`, `login`, `getMe`, `updateProfile`, `changePassword`, `getAccountStats`, `generateToken`, and `sanitizeUser`.
-6. `server/controllers/transactionController.js`: Implementation of `createTransaction`, `getTransactions` (with query filtering, regex search, pagination, and sorting), `updateTransaction`, and `deleteTransaction`.
-7. `server/controllers/budgetController.js`: Implementation of `setBudget`, `getBudget`, and `updateBudget` with upsert logic.
-8. `server/controllers/dashboardController.js`: Implementation of `getDashboardSummary` aggregating trends, category breakdown, and summary cards.
-9. `server/controllers/reportController.js`: Implementation of `getMonthlyReport` supporting JSON summary and PDFKit document streaming.
-10. `server/controllers/aiController.js`: Implementation of `generateInsights` and `predictSpending`.
-11. `server/services/financeAnalyzer.js`: Implementation of `currency`, `getMonthRange`, `summarizeTransactions`, and `analyzeFinance`.
-12. `server/services/aiService.js`: Implementation of `hasOpenAIKey`, `generateAIInsights` (with OpenAI chat completions and heuristic fallback), and `predictExpense`.
-
-### Frontend Gaps
-1. `client/src/redux/store.js`: Registering `auth`, `transactions`, `budget`, and `insights` reducers into `configureStore`.
-2. `client/src/redux/slices/authSlice.js`: Implementation of async thunks (`loginUser`, `signupUser`, `refreshUser`, `updateProfileThunk`), reducers (`setUser`, `updateUser`, `logout`), and extraReducers.
-3. `client/src/redux/slices/transactionSlice.js`: Implementation of async thunks (`fetchTransactions`, `saveTransaction`, `removeTransactionById`), reducers (`setFilters`, `addTransaction`, etc.), and extraReducers.
-4. `client/src/redux/slices/budgetSlice.js`: Implementation of async thunks (`fetchBudget`, `saveBudget`), reducers, and extraReducers.
-5. `client/src/redux/slices/insightSlice.js`: Implementation of async thunks (`fetchInsights`, `fetchPrediction`), reducers, and extraReducers.
-6. `client/src/App.jsx`: Implementing `ProtectedRoute` guard and defining all public and protected `<Route>` paths.
-7. `client/src/components/layout/`: Implementing active links, navigation mapping, and logout dispatch in `Sidebar.jsx`; user details display in `Navbar.jsx`; and `<Outlet />` mounting in `Layout.jsx`.
-8. `client/src/pages/`: Implementing complete interactive forms, state hooks, Recharts data bindings, modals, and tables across `Login`, `Signup`, `Dashboard`, `Transactions`, `Budget`, `Reports`, `Insights`, and `Profile`.
-
----
-
-## 19. Recommended Implementation Priorities
-
-```
-+-------------------------------------------------------------------------------+
-| PHASE 1: Core Backend Security & Data Models                                 |
-| 1. Define complete Mongoose schemas & indexes (User, Transaction, Budget)    |
-| 2. Implement bcrypt hashing pre-save hooks and matchPassword in User.js       |
-| 3. Implement JWT protect middleware in authMiddleware.js                      |
-| 4. Implement authController.js (signup, login, getMe, profile, password)      |
-+---------------------------------------+---------------------------------------+
-                                        v
-+-------------------------------------------------------------------------------+
-| PHASE 2: Core Finance Analyzer & Transaction/Budget CRUD                      |
-| 1. Implement financeAnalyzer.js (summarizeTransactions, date calculations)    |
-| 2. Implement transactionController.js (CRUD, search, filters, pagination)     |
-| 3. Implement budgetController.js (getBudget, setBudget upsert)                |
-| 4. Implement dashboardController.js (summary analytics)                       |
-+---------------------------------------+---------------------------------------+
-                                        v
-+-------------------------------------------------------------------------------+
-| PHASE 3: AI Engine, Prediction & PDF Reporting                                |
-| 1. Implement aiService.js (OpenAI integration + heuristic fallback rules)     |
-| 2. Implement aiController.js (insights & spending prediction)                 |
-| 3. Implement reportController.js (monthly summary + PDFKit streaming)        |
-+---------------------------------------+---------------------------------------+
-                                        v
-+-------------------------------------------------------------------------------+
-| PHASE 4: Frontend State Architecture & Routing                                |
-| 1. Configure redux/store.js with all slice reducers                           |
-| 2. Implement all Redux slice thunks and extraReducers (auth, tx, budget, ai)  |
-| 3. Implement ProtectedRoute and complete React Router tree in App.jsx         |
-| 4. Implement Layout, Navbar, and Sidebar components                           |
-+---------------------------------------+---------------------------------------+
-                                        v
-+-------------------------------------------------------------------------------+
-| PHASE 5: Frontend UI Views & Data Visualization                               |
-| 1. Implement Login.jsx & Signup.jsx authentication forms                      |
-| 2. Implement Transactions.jsx (filter bar, data table, pagination, modal)    |
-| 3. Implement Dashboard.jsx (SummaryCards, Recharts Line/Pie/Bar charts)       |
-| 4. Implement Budget.jsx (monthly budget, category limits, progress bars)      |
-| 5. Implement Insights.jsx (AI cards, confidence meter, prediction alerts)     |
-| 6. Implement Reports.jsx (period picker, metrics, PDF export trigger)        |
-| 7. Implement Profile.jsx (user info update, password change, stats)          |
-+---------------------------------------+---------------------------------------+
-                                        v
-+-------------------------------------------------------------------------------+
-| PHASE 6: End-to-End Testing & Hardening                                       |
-| 1. Validate error handling across all API endpoints                           |
-| 2. Write Jest/Supertest backend integration tests                             |
-| 3. Write Vitest/Testing Library frontend component tests                      |
-| 4. Audit CORS, rate limits, and token expiration handling                     |
-+-------------------------------------------------------------------------------+
+# Run mobile tests
+cd mobile && npm test
 ```
 
 ---
 
-## 20. Implementation Status Table
+## 26. Environment Variables
 
-| Area | Component / Module | Type | Status | Current Reality in Codebase |
-| :--- | :--- | :--- | :--- | :--- |
-| **Server** | `server.js` | Entry Point | **IMPLEMENTED** | Server bootstrapper with DB connection call and port listener |
-| **Server** | `app.js` | Configuration | **IMPLEMENTED** | Express app, Helmet, CORS, Rate Limit, JSON parser, route mounting, health check |
-| **Server** | `authMiddleware.js` | Middleware | **NOT IMPLEMENTED** | Empty function stub containing only comments; does not authenticate or call `next()` |
-| **Server** | `User.js` | Model | **PARTIALLY IMPLEMENTED** | Mongoose model created with empty schema `new mongoose.Schema({})`; fields in comments |
-| **Server** | `Transaction.js` | Model | **PARTIALLY IMPLEMENTED** | Mongoose model created with empty schema `new mongoose.Schema({})`; fields in comments |
-| **Server** | `Budget.js` | Model | **PARTIALLY IMPLEMENTED** | Mongoose model created with empty schema `new mongoose.Schema({})`; fields in comments |
-| **Server** | `authRoutes.js` | Route | **IMPLEMENTED** | Router configured with endpoint paths and method mappings |
-| **Server** | `transactionRoutes.js` | Route | **IMPLEMENTED** | Router configured with endpoint paths and method mappings |
-| **Server** | `budgetRoutes.js` | Route | **IMPLEMENTED** | Router configured with endpoint paths and method mappings |
-| **Server** | `dashboardRoutes.js` | Route | **IMPLEMENTED** | Router configured with endpoint paths and method mappings |
-| **Server** | `reportRoutes.js` | Route | **IMPLEMENTED** | Router configured with endpoint paths and method mappings |
-| **Server** | `aiRoutes.js` | Route | **IMPLEMENTED** | Router configured with endpoint paths and method mappings |
-| **Server** | `authController.js` | Controller | **NOT IMPLEMENTED** | Stubs only (`signup`, `login`, `getMe`, `updateProfile`, `changePassword`, `getAccountStats`) |
-| **Server** | `transactionController.js` | Controller | **NOT IMPLEMENTED** | Stubs only (`createTransaction`, `getTransactions`, `updateTransaction`, `deleteTransaction`) |
-| **Server** | `budgetController.js` | Controller | **NOT IMPLEMENTED** | Stubs only (`setBudget`, `getBudget`, `updateBudget`) |
-| **Server** | `dashboardController.js` | Controller | **NOT IMPLEMENTED** | Stub only (`getDashboardSummary`) |
-| **Server** | `reportController.js` | Controller | **NOT IMPLEMENTED** | Stub only (`getMonthlyReport`, `formatCurrency`) |
-| **Server** | `aiController.js` | Controller | **NOT IMPLEMENTED** | Stubs only (`generateInsights`, `predictSpending`) |
-| **Server** | `financeAnalyzer.js` | Service Engine | **NOT IMPLEMENTED** | Stubs only (`currency`, `getMonthRange`, `summarizeTransactions`, `analyzeFinance`) |
-| **Server** | `aiService.js` | Service Engine | **NOT IMPLEMENTED** | Stubs only (`hasOpenAIKey`, `generateAIInsights`, `predictExpense`) |
-| **Client** | `vite.config.js` | Build Config | **IMPLEMENTED** | Configured with React plugin and `/api` proxy to `http://localhost:5000` |
-| **Client** | `tailwind.config.js` | Style Config | **IMPLEMENTED** | Configured with custom color palette (`primary`, `secondary`, `accent`) |
-| **Client** | `api.js` | Service | **IMPLEMENTED** | Axios instance configured with JWT request interceptor and 401 response interceptor |
-| **Client** | `authService.js` | Service | **IMPLEMENTED** | API caller functions mapped to all `/api/auth/*` endpoints |
-| **Client** | `transactionService.js` | Service | **IMPLEMENTED** | API caller functions mapped to all `/api/transactions/*` endpoints |
-| **Client** | `budgetService.js` | Service | **IMPLEMENTED** | API caller functions mapped to all `/api/budget/*` endpoints |
-| **Client** | `dashboardService.js` | Service | **IMPLEMENTED** | API caller function mapped to `/api/dashboard/summary` |
-| **Client** | `reportService.js` | Service | **IMPLEMENTED** | API caller functions mapped to `/api/reports/monthly` (JSON and Blob PDF) |
-| **Client** | `aiService.js` | Service | **IMPLEMENTED** | API caller functions mapped to `/api/ai/insights` and `/api/ai/predict` |
-| **Client** | `format.js` | Utility | **IMPLEMENTED** | `formatCurrency` (INR), `formatDate`, `categories` array (12), `paymentMethods` array (6) |
-| **Client** | `store.js` | Redux Store | **PARTIALLY IMPLEMENTED** | Store configuration initialized with empty reducer object `reducer: {}` |
-| **Client** | `authSlice.js` | Redux Slice | **PARTIALLY IMPLEMENTED** | Initial state exists; thunks, reducers, and extraReducers are empty stubs |
-| **Client** | `transactionSlice.js` | Redux Slice | **PARTIALLY IMPLEMENTED** | Initial state exists; thunks, reducers, and extraReducers are empty stubs |
-| **Client** | `budgetSlice.js` | Redux Slice | **PARTIALLY IMPLEMENTED** | Initial state exists; thunks, reducers, and extraReducers are empty stubs |
-| **Client** | `insightSlice.js` | Redux Slice | **PARTIALLY IMPLEMENTED** | Initial state exists; thunks, reducers, and extraReducers are empty stubs |
-| **Client** | `App.jsx` | Routing | **PARTIALLY IMPLEMENTED** | Router shell rendered; `ProtectedRoute` and route elements commented out |
-| **Client** | `SummaryCard.jsx` | UI Component | **IMPLEMENTED** | Visual card component supporting custom tone themes (`slate`, `green`, `red`, `blue`) |
-| **Client** | `Layout.jsx` | UI Component | **PARTIALLY IMPLEMENTED** | Container layout shell; Navbar, Sidebar, and Outlet bindings commented out |
-| **Client** | `Navbar.jsx` | UI Component | **PARTIALLY IMPLEMENTED** | Nav container shell; user state and heading elements commented out |
-| **Client** | `Sidebar.jsx` | UI Component | **PARTIALLY IMPLEMENTED** | Aside container shell; navigation items mapping and logout handler commented out |
-| **Client** | `Login.jsx` | UI Page | **PARTIALLY IMPLEMENTED** | Container card layout; inputs, state, form handlers commented out |
-| **Client** | `Signup.jsx` | UI Page | **PARTIALLY IMPLEMENTED** | Container card layout; inputs, state, form handlers commented out |
-| **Client** | `Dashboard.jsx` | UI Page | **PARTIALLY IMPLEMENTED** | Grid layout structure; Recharts charts, cards, and data fetching commented out |
-| **Client** | `Transactions.jsx` | UI Page | **PARTIALLY IMPLEMENTED** | Table & filter layout; CRUD modal, pagination, and data bindings commented out |
-| **Client** | `Budget.jsx` | UI Page | **PARTIALLY IMPLEMENTED** | Form & progress layout; category inputs and progress bar logic commented out |
-| **Client** | `Reports.jsx` | UI Page | **PARTIALLY IMPLEMENTED** | Report grid layout; chart rendering and PDF export trigger commented out |
-| **Client** | `Insights.jsx` | UI Page | **PARTIALLY IMPLEMENTED** | Insight card layout; AI recommendations and prediction rendering commented out |
-| **Client** | `Profile.jsx` | UI Page | **PARTIALLY IMPLEMENTED** | Form layout structure; profile update, password form, and stats commented out |
+Configure these variables in [`server/.env`](file:///d:/Major%20project/Finance-Tracker-Initial-Codes/server/.env.example):
+
+| Variable Name | Required | Default / Example Value | Description |
+| :--- | :---: | :--- | :--- |
+| `NODE_ENV` | Optional | `development` | Environment mode (`development` / `production`) |
+| `PORT` | Optional | `5000` | HTTP port for backend server |
+| `MONGODB_URI` | **Yes** | `mongodb://localhost:27017/ai-finance-tracker` | MongoDB connection connection string |
+| `JWT_SECRET` | **Yes** | *[Random 256-bit Secret]* | Secret key for signing and verifying JWT tokens |
+| `JWT_EXPIRE` | Optional | `7d` | Token lifetime before expiration |
+| `GEMINI_API_KEY` | Optional | *[Google AI Studio Key]* | API key for Google Gemini (`gemini-2.0-flash`) |
+| `GEMINI_MODEL` | Optional | `gemini-2.0-flash` | Gemini model variant |
+| `OPENAI_API_KEY` | Optional | *[Optional Legacy Key]* | Legacy OpenAI key for dual-compatibility |
+| `FRONTEND_URL` | Optional | `http://localhost:5173` | Allowed origin for Cross-Origin Resource Sharing |
+
+---
+
+## 27. Production Architecture
+
+The verified target production topology:
+
+```
+[ Android Mobile App (Release APK) ] ──┐
+                                       ├──> [ Cloudflare / AWS CloudFront (SSL Termination) ]
+[ React Web Client (Production Build) ] ──┘                        │
+                                                                   v
+                                                     [ NGINX Reverse Proxy ]
+                                                                   │
+                                                                   v
+                                                  [ Node.js / Express API Cluster ]
+                                                  (PM2 Process Manager / Docker)
+                                                    │                   │
+                                                    v                   v
+                                          [ MongoDB Atlas ]     [ Google Gemini API ]
+                                          (Encrypted Cluster)   (Secure TLS REST)
+```
+
+> **Deployment Status**: The application is verified for local and physical Android device execution. Cloud deployment to production infrastructure (e.g. AWS / DigitalOcean / Atlas) is pending.
+
+---
+
+## 28. Future Enhancements
+
+1. **Account Aggregator (AA) Framework Integration**: Direct integration with RBI-regulated Account Aggregators (e.g. Setu, OneMoney) for automated bank feeds.
+2. **Multi-Currency & FX Normalization**: Real-time foreign exchange rate conversion for multi-currency accounts.
+3. **Receipt OCR & Invoice Scanning**: Edge-based camera optical character recognition to extract line items from paper receipts.
+4. **Shared Family / Joint Accounts**: Role-based access control for shared household budgets with granular privacy settings.
+5. **Investment Portfolio Tracking**: Mutual funds, stocks, and fixed deposit portfolio tracking with automated NAV updates.
+
+---
+
+## 29. Project Completion Summary
+
+The **FinTrack — AI-Powered Automatic Personal Finance Intelligence System** has achieved 100% implementation of its functional and architectural scope:
+- Automated multi-source ingestion (CSV, XLSX, SMS, Android Notifications) with zero manual overhead.
+- Dual-tier intelligence with verified mathematical calculations and Google Gemini AI grounding.
+- Internal Model Context Protocol (MCP) server integration for secure, isolated AI tool execution.
+- High-performance, cross-platform client delivery across modern Web and native Android mobile.
+- Validated with over 960+ automated tests across backend, web, and mobile suites and verified on physical Android hardware (`CPH2381`).
