@@ -1,0 +1,194 @@
+[
+  {
+    "id": "sms_01",
+    "sender": "HDFC-BANK",
+    "text": "UPI payment of Rs.480 to SWIGGY on 26-09-2026 was successful. Ref: UPI48192019",
+    "date": "2026-09-26T12:30:00Z"
+  },
+  {
+    "id": "sms_02",
+    "sender": "ICICI-BNK",
+    "text": "INR 1,250 debited from your A/c 5491 for AMAZON on 25-09-2026. Txn ID: AMZ99210",
+    "date": "2026-09-25T14:15:00Z"
+  },
+  {
+    "id": "sms_03",
+    "sender": "SBI-INB",
+    "text": "Rs 95,000.00 credited to your account. Salary credit from INFOSYS TECHNOLOGIES on 25-09-2026.",
+    "date": "2026-09-25T09:00:00Z"
+  },
+  {
+    "id": "sms_04",
+    "sender": "AXIS-BNK",
+    "text": "Your UPI transaction of ₹650 to Uber was successful on 24-09-2026. Ref: UBR9921",
+    "date": "2026-09-24T18:45:00Z"
+  },
+  {
+    "id": "sms_05",
+    "sender": "KOTAK-BNK",
+    "text": "Rs.2,400 debited via IMPS to ABC ELECTRONICS on 24-09-2026. UTR: IMPS881920",
+    "date": "2026-09-24T16:20:00Z"
+  },
+  {
+    "id": "sms_06",
+    "sender": "HDFC-BANK",
+    "text": "Electricity bill payment of Rs.1,850 to BESCOM completed successfully on 23-09-2026.",
+    "date": "2026-09-23T11:10:00Z"
+  },
+  {
+    "id": "sms_07",
+    "sender": "ICICI-BNK",
+    "text": "ATM withdrawal of Rs.3,000 from ICICI ATM MG Road on 23-09-2026.",
+    "date": "2026-09-23T19:30:00Z"
+  },
+  {
+    "id": "sms_08",
+    "sender": "HDFC-BANK",
+    "text": "Rs.720 spent on your HDFC Debit Card at ZOMATO RESTAURANT on 22-09-2026.",
+    "date": "2026-09-22T20:15:00Z"
+  },
+  {
+    "id": "sms_09",
+    "sender": "AIRTEL-PAY",
+    "text": "Recharge of Rs.479 for mobile 9876543210 is successful. Paid via Airtel Payments Bank.",
+    "date": "2026-09-22T10:00:00Z"
+  },
+  {
+    "id": "sms_10",
+    "sender": "SBI-INB",
+    "text": "Rs.15,000 debited from A/c 8812 for ZERODHA BROKING investment on 21-09-2026.",
+    "date": "2026-09-21T11:45:00Z"
+  },
+  {
+    "id": "sms_11",
+    "sender": "AXIS-BNK",
+    "text": "Paid Rs.649 for NETFLIX ENTERTAINMENT subscription on 21-09-2026.",
+    "date": "2026-09-21T08:00:00Z"
+  },
+  {
+    "id": "sms_12",
+    "sender": "HDFC-BANK",
+    "text": "Rs.560 paid to APOLLO PHARMACY using UPI on 20-09-2026. Ref: APL88210",
+    "date": "2026-09-20T17:30:00Z"
+  },
+  {
+    "id": "sms_13",
+    "sender": "ICICI-BNK",
+    "text": "INR 3,499 debited for purchase at FLIPKART INTERNET on 20-09-2026.",
+    "date": "2026-09-20T13:20:00Z"
+  },
+  {
+    "id": "sms_14",
+    "sender": "KOTAK-BNK",
+    "text": "Rs.220 debited from account for OLA CABS ride on 19-09-2026.",
+    "date": "2026-09-19T21:10:00Z"
+  },
+  {
+    "id": "sms_15",
+    "sender": "SBI-INB",
+    "text": "Your A/c has been credited with Rs.5,000.00 from GROWW MUTUAL FUND on 19-09-2026.",
+    "date": "2026-09-19T15:00:00Z"
+  },
+  {
+    "id": "sms_16",
+    "sender": "HDFC-BANK",
+    "text": "Rs.350 paid to BLINKIT GROCERY DELIVERY on 18-09-2026. UPI Ref: BLK9910",
+    "date": "2026-09-18T19:00:00Z"
+  },
+  {
+    "id": "sms_17",
+    "sender": "AXIS-BNK",
+    "text": "Debit of Rs.1,450 for fuel purchase at HPCL PETROL PUMP on 18-09-2026.",
+    "date": "2026-09-18T08:30:00Z"
+  },
+  {
+    "id": "sms_18",
+    "sender": "ICICI-BNK",
+    "text": "Rs.1,199 debited for subscription to SPOTIFY MUSIC on 17-09-2026.",
+    "date": "2026-09-17T12:00:00Z"
+  },
+  {
+    "id": "sms_19",
+    "sender": "HDFC-BANK",
+    "text": "Paid Rs.850 at PVR CINEMAS for movie tickets on 16-09-2026. Ref: PVR4410",
+    "date": "2026-09-16T18:00:00Z"
+  },
+  {
+    "id": "sms_20",
+    "sender": "SBI-INB",
+    "text": "Rs.2,100 debited from A/c for MYNTRA FASHION purchase on 15-09-2026.",
+    "date": "2026-09-15T16:40:00Z"
+  },
+  {
+    "id": "sms_21",
+    "sender": "KOTAK-BNK",
+    "text": "Your account is credited with Rs.1,200.00 towards TCS DIVIDEND payout on 15-09-2026.",
+    "date": "2026-09-15T11:00:00Z"
+  },
+  {
+    "id": "sms_22",
+    "sender": "HDFC-BANK",
+    "text": "Sent Rs.3,500 to landlord for MONTHLY RENT via UPI on 14-09-2026. Ref: RNT110",
+    "date": "2026-09-14T10:00:00Z"
+  },
+  {
+    "id": "sms_23",
+    "sender": "ICICI-BNK",
+    "text": "Rs.420 spent at STARBUCKS CAFE on 13-09-2026 using debit card.",
+    "date": "2026-09-13T17:15:00Z"
+  },
+  {
+    "id": "sms_24",
+    "sender": "AXIS-BNK",
+    "text": "Payment of Rs.890 for ACT FIBERNET broadband bill completed on 12-09-2026.",
+    "date": "2026-09-12T09:30:00Z"
+  },
+  {
+    "id": "sms_25",
+    "sender": "SBI-INB",
+    "text": "ATM withdrawal of Rs.5,000 from SBI ATM Koramangala on 11-09-2026.",
+    "date": "2026-09-11T20:00:00Z"
+  },
+  {
+    "id": "sms_26",
+    "sender": "HDFC-BANK",
+    "text": "Rs.320 debited for RAPIDO BIKE TAXI ride on 10-09-2026.",
+    "date": "2026-09-10T14:20:00Z"
+  },
+  {
+    "id": "sms_27",
+    "sender": "ICICI-BNK",
+    "text": "Refund of Rs.450 credited to your account from SWIGGY on 09-09-2026.",
+    "date": "2026-09-09T18:30:00Z"
+  },
+  {
+    "id": "sms_28",
+    "sender": "KOTAK-BNK",
+    "text": "Debit of Rs.850 for COURSERA online learning on 08-09-2026.",
+    "date": "2026-09-08T11:00:00Z"
+  },
+  {
+    "id": "sms_29",
+    "sender": "AXIS-BNK",
+    "text": "Rs.180 paid to LOCAL GENERAL STORE using UPI on 07-09-2026. Ref: GEN991",
+    "date": "2026-09-07T13:40:00Z"
+  },
+  {
+    "id": "sms_30",
+    "sender": "HDFC-BANK",
+    "text": "UPI payment of Rs.480 to SWIGGY on 26-09-2026 was successful. Ref: UPI48192019",
+    "date": "2026-09-26T12:30:00Z"
+  },
+  {
+    "id": "sms_31",
+    "sender": "HDFC-BANK",
+    "text": "Your OTP for login is 481920. Please do not share this code with anyone for security reasons.",
+    "date": "2026-09-26T13:00:00Z"
+  },
+  {
+    "id": "sms_32",
+    "sender": "JIO-INFO",
+    "text": "Dear customer, your daily high-speed data limit of 1.5 GB is 100% exhausted.",
+    "date": "2026-09-26T15:00:00Z"
+  }
+]

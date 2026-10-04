@@ -1,0 +1,33 @@
+# Environment secrets
+.env
+.env.*
+!.env.example
+
+# Dependencies
+node_modules/
+client/node_modules/
+server/node_modules/
+mobile/node_modules/
+
+# Build/output
+dist/
+build/
+.expo/
+mobile/android/.gradle/
+mobile/android/app/build/
+
+# Android local files / signing
+mobile/android/local.properties
+mobile/android/app/debug.keystore
+
+# Logs
+*.log
+npm-debug.log*
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
